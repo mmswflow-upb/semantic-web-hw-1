@@ -1,0 +1,7 @@
+<!ELEMENT users (user*)>
+<!ELEMENT user (name, surname, skillLevel, preferredCuisine)>
+<!ATTLIST user id ID #REQUIRED>
+<!ELEMENT name (#PCDATA)>
+<!ELEMENT surname (#PCDATA)>
+<!ELEMENT skillLevel (#PCDATA)>
+<!ELEMENT preferredCuisine (#PCDATA)>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE users SYSTEM "users.dtd">
+<users>
+    <user id="u1">
+        <name>Alice</name>
+        <surname>Demo</surname>
+        <skillLevel>Intermediate</skillLevel>
+        <preferredCuisine>Italian</preferredCuisine>
+    </user>
+</users>
