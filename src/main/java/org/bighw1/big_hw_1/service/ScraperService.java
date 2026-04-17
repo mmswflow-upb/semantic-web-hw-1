@@ -61,6 +61,7 @@ public class ScraperService {
             for (Element card : cards) {
                 String title = card.text().trim();
                 if (title.isEmpty()) continue;
+                if (title.contains("premium piece of content") || title.startsWith("App only")) continue;
 
                 // Pick 2 distinct cuisine types at random
                 int i1 = rand.nextInt(CUISINE_TYPES.size());
