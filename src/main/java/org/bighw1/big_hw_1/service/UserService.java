@@ -1,21 +1,24 @@
 package org.bighw1.big_hw_1.service;
 
 import org.bighw1.big_hw_1.model.User;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.*;
 
+import javax.xml.transform.TransformerException;
+import javax.xml.xpath.XPathExpressionException;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class UserService {
 
-    @Autowired
-    private XmlStore xmlStore;
+    private final XmlStore xmlStore;
+    private final XmlService xmlService;
 
-    @Autowired
-    private XmlService xmlService;
+    public UserService(XmlStore xmlStore, XmlService xmlService) {
+        this.xmlStore = xmlStore;
+        this.xmlService = xmlService;
+    }
 
     private User nodeToUser(Node node) {
         Element el = (Element) node;
@@ -27,7 +30,7 @@ public class UserService {
         return new User(id, name, surname, skillLevel, preferredCuisine);
     }
 
-    public List<User> getAll() throws Exception {
+    public List<User> getAll() throws XPathExpressionException {
         NodeList nodes = xmlService.queryNodeList(xmlStore.getUsersDoc(), "//user");
         List<User> list = new ArrayList<>();
         for (int i = 0; i < nodes.getLength(); i++) {
@@ -36,14 +39,13 @@ public class UserService {
         return list;
     }
 
-    // The recommendation page always shows results for the first user in the file.
-    public User getFirstUser() throws Exception {
+    public User getFirstUser() throws XPathExpressionException {
         Node node = xmlService.queryNode(xmlStore.getUsersDoc(), "//user[1]");
         if (node == null) return null;
         return nodeToUser(node);
     }
 
-    public void addUser(User user) throws Exception {
+    public void addUser(User user) throws TransformerException {
         Document doc = xmlStore.getUsersDoc();
         Element root = doc.getDocumentElement();
 

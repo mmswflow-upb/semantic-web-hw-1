@@ -1,13 +1,13 @@
 package org.bighw1.big_hw_1.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.IOException;
 import java.nio.file.Path;
 
-// Holds the two DOM Documents in memory for the lifetime of the application.
-// Services read and write through this shared state so changes are immediately visible.
 @Component
 public class XmlStore {
 
@@ -16,11 +16,13 @@ public class XmlStore {
     private Path recipesPath;
     private Path usersPath;
 
-    @Autowired
-    private XmlService xmlService;
+    private final XmlService xmlService;
 
-    // Called once at startup by BigHw1Application after the data files exist on disk.
-    public void init(Path recipesPath, Path usersPath) throws Exception {
+    public XmlStore(XmlService xmlService) {
+        this.xmlService = xmlService;
+    }
+
+    public void init(Path recipesPath, Path usersPath) throws ParserConfigurationException, SAXException, IOException {
         this.recipesPath = recipesPath;
         this.usersPath = usersPath;
         this.recipesDoc = xmlService.load(recipesPath);

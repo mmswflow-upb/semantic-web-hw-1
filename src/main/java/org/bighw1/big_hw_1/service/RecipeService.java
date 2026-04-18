@@ -1,24 +1,26 @@
 package org.bighw1.big_hw_1.service;
 
 import org.bighw1.big_hw_1.model.Recipe;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.*;
 
+import javax.xml.transform.TransformerException;
+import javax.xml.xpath.XPathExpressionException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
-// All recipe logic. Reads from and writes to the in-memory DOM held by XmlStore.
 @Service
 public class RecipeService {
 
-    @Autowired
-    private XmlStore xmlStore;
+    private final XmlStore xmlStore;
+    private final XmlService xmlService;
 
-    @Autowired
-    private XmlService xmlService;
+    public RecipeService(XmlStore xmlStore, XmlService xmlService) {
+        this.xmlStore = xmlStore;
+        this.xmlService = xmlService;
+    }
 
-    // Turn a single <recipe> DOM node into a Recipe object.
     private Recipe nodeToRecipe(Node node) {
         Element el = (Element) node;
         String id = el.getAttribute("id");
@@ -30,7 +32,7 @@ public class RecipeService {
         return new Recipe(id, title, ct1, ct2, difficulty);
     }
 
-    public List<Recipe> getAll() throws Exception {
+    public List<Recipe> getAll() throws XPathExpressionException {
         NodeList nodes = xmlService.queryNodeList(xmlStore.getRecipesDoc(), "//recipe");
         List<Recipe> list = new ArrayList<>();
         for (int i = 0; i < nodes.getLength(); i++) {
@@ -39,14 +41,14 @@ public class RecipeService {
         return list;
     }
 
-    public Recipe getById(String id) throws Exception {
-        // XPath string concat to build the predicate safely
-        Node node = xmlService.queryNode(xmlStore.getRecipesDoc(), "//recipe[@id='" + id + "']");
+    public Recipe getById(String id) throws XPathExpressionException {
+        Node node = xmlService.queryNode(
+                xmlStore.getRecipesDoc(), "//recipe[@id=$id]", Map.of("id", id));
         if (node == null) return null;
         return nodeToRecipe(node);
     }
 
-    public void add(Recipe recipe) throws Exception {
+    public void add(Recipe recipe) throws TransformerException {
         Document doc = xmlStore.getRecipesDoc();
         Element root = doc.getDocumentElement();
 
@@ -74,11 +76,11 @@ public class RecipeService {
         xmlService.save(doc, xmlStore.getRecipesPath());
     }
 
-    public List<Recipe> filterByCuisine(String cuisine) throws Exception {
+    public List<Recipe> filterByCuisine(String cuisine) throws XPathExpressionException {
         NodeList nodes = xmlService.queryNodeList(
                 xmlStore.getRecipesDoc(),
-                "//recipe[cuisineTypes/cuisineType='" + cuisine + "']"
-        );
+                "//recipe[cuisineTypes/cuisineType=$cuisine]",
+                Map.of("cuisine", cuisine));
         List<Recipe> list = new ArrayList<>();
         for (int i = 0; i < nodes.getLength(); i++) {
             list.add(nodeToRecipe(nodes.item(i)));
@@ -86,11 +88,11 @@ public class RecipeService {
         return list;
     }
 
-    public List<Recipe> recommendBySkill(String skillLevel) throws Exception {
+    public List<Recipe> recommendBySkill(String skillLevel) throws XPathExpressionException {
         NodeList nodes = xmlService.queryNodeList(
                 xmlStore.getRecipesDoc(),
-                "//recipe[difficulty='" + skillLevel + "']"
-        );
+                "//recipe[difficulty=$skill]",
+                Map.of("skill", skillLevel));
         List<Recipe> list = new ArrayList<>();
         for (int i = 0; i < nodes.getLength(); i++) {
             list.add(nodeToRecipe(nodes.item(i)));
@@ -98,11 +100,11 @@ public class RecipeService {
         return list;
     }
 
-    public List<Recipe> recommendBySkillAndCuisine(String skillLevel, String cuisine) throws Exception {
+    public List<Recipe> recommendBySkillAndCuisine(String skillLevel, String cuisine) throws XPathExpressionException {
         NodeList nodes = xmlService.queryNodeList(
                 xmlStore.getRecipesDoc(),
-                "//recipe[difficulty='" + skillLevel + "' and cuisineTypes/cuisineType='" + cuisine + "']"
-        );
+                "//recipe[difficulty=$skill and cuisineTypes/cuisineType=$cuisine]",
+                Map.of("skill", skillLevel, "cuisine", cuisine));
         List<Recipe> list = new ArrayList<>();
         for (int i = 0; i < nodes.getLength(); i++) {
             list.add(nodeToRecipe(nodes.item(i)));

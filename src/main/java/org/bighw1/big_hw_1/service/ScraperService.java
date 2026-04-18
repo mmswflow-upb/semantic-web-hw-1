@@ -5,16 +5,17 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Random;
 
-// Scrapes recipe titles from bbcgoodfood.com and writes them to recipes.xml.
-// Only runs if recipes.xml has fewer than 20 entries.
 @Service
 public class ScraperService {
+
+    private static final Logger log = LoggerFactory.getLogger(ScraperService.class);
 
     private static final String SCRAPE_URL =
             "https://www.bbcgoodfood.com/recipes/collection/budget-autumn";
@@ -28,8 +29,11 @@ public class ScraperService {
             "Beginner", "Intermediate", "Advanced"
     );
 
-    @Autowired
-    private RecipeService recipeService;
+    private final RecipeService recipeService;
+
+    public ScraperService(RecipeService recipeService) {
+        this.recipeService = recipeService;
+    }
 
     public void scrapeIfNeeded() {
         try {
@@ -38,19 +42,16 @@ public class ScraperService {
                 return;
             }
 
-            System.out.println("recipes.xml has " + existing.size() + " recipes, scraping bbcgoodfood...");
+            log.info("recipes.xml has {} recipes, scraping bbcgoodfood...", existing.size());
 
-            // Use a browser-like User-Agent so the site does not block the request.
             Document page = Jsoup.connect(SCRAPE_URL)
                     .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
                     .timeout(15000)
                     .get();
 
-            // Recipe card titles on bbcgoodfood are in h2 elements with class "heading-4".
-            // Promotion section headers also have heading-4, so exclude those.
+            // bbcgoodfood recipe card titles are h2.heading-4; exclude promotion headers with the same class.
             Elements cards = page.select("h2.heading-4:not(.promotion-cards__title--heading)");
             if (cards.isEmpty()) {
-                // Fallback: any h2 on the page
                 cards = page.select("h2");
             }
 
@@ -63,7 +64,6 @@ public class ScraperService {
                 if (title.isEmpty()) continue;
                 if (title.contains("premium piece of content") || title.startsWith("App only")) continue;
 
-                // Pick 2 distinct cuisine types at random
                 int i1 = rand.nextInt(CUISINE_TYPES.size());
                 int i2;
                 do {
@@ -82,10 +82,10 @@ public class ScraperService {
                 if (existing.size() + added >= 20) break;
             }
 
-            System.out.println("Scraper added " + added + " recipes.");
+            log.info("Scraper added {} recipes.", added);
 
         } catch (Exception e) {
-            System.err.println("Scraper failed, continuing with existing recipes: " + e.getMessage());
+            log.warn("Scraper failed, continuing with existing recipes: {}", e.getMessage());
         }
     }
 }
