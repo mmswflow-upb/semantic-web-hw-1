@@ -52,9 +52,7 @@ public class UserController {
             return "users/add";
         }
 
-        int nextId = userService.getAll().size() + 1;
-        String id = "u" + nextId;
-        userService.addUser(new User(id, name, surname, skillLevel, preferredCuisine));
+        userService.addUser(name, surname, skillLevel, preferredCuisine);
         return "redirect:/recommendations";
     }
 
@@ -74,8 +72,7 @@ public class UserController {
         List<User> users = userService.getAll();
         model.addAttribute("users", users);
         model.addAttribute("selectedUserId", userId);
-        User user = userService.getById(userId);
-        populateRecommendations(user, model);
+        populateRecommendations(userService.getById(userId), model);
         return "users/recommendations";
     }
 

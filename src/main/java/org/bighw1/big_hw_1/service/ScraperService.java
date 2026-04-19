@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Service
 public class ScraperService {
@@ -31,9 +31,7 @@ public class ScraperService {
     public void scrapeIfNeeded() {
         try {
             List<Recipe> existing = recipeService.getAll();
-            if (existing.size() >= 20) {
-                return;
-            }
+            if (existing.size() >= 20) return;
 
             log.info("recipes.xml has {} recipes, scraping bbcgoodfood...", existing.size());
 
@@ -50,8 +48,6 @@ public class ScraperService {
 
             CuisineType[] cuisines = CuisineType.values();
             DifficultyLevel[] difficulties = DifficultyLevel.values();
-            Random rand = new Random();
-            int count = existing.size();
             int added = 0;
 
             for (Element card : cards) {
@@ -59,19 +55,16 @@ public class ScraperService {
                 if (title.isEmpty()) continue;
                 if (title.contains("premium piece of content") || title.startsWith("App only")) continue;
 
-                int i1 = rand.nextInt(cuisines.length);
+                ThreadLocalRandom rng = ThreadLocalRandom.current();
+                int i1 = rng.nextInt(cuisines.length);
                 int i2;
-                do {
-                    i2 = rand.nextInt(cuisines.length);
-                } while (i2 == i1);
+                do { i2 = rng.nextInt(cuisines.length); } while (i2 == i1);
 
-                String ct1 = cuisines[i1].toString();
-                String ct2 = cuisines[i2].toString();
-                String difficulty = difficulties[rand.nextInt(difficulties.length)].toString();
-
-                count++;
-                String id = "r" + count;
-                recipeService.add(new Recipe(id, title, ct1, ct2, difficulty));
+                recipeService.add(
+                        title,
+                        cuisines[i1].toString(),
+                        cuisines[i2].toString(),
+                        difficulties[rng.nextInt(difficulties.length)].toString());
                 added++;
 
                 if (existing.size() + added >= 20) break;

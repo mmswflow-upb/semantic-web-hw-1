@@ -7,34 +7,24 @@ import org.bighw1.big_hw_1.model.User;
 import org.bighw1.big_hw_1.service.RecipeService;
 import org.bighw1.big_hw_1.service.ScraperService;
 import org.bighw1.big_hw_1.service.UserService;
-import org.bighw1.big_hw_1.service.XmlService;
-import org.bighw1.big_hw_1.service.XmlStore;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.xml.transform.TransformerException;
 import javax.xml.xpath.XPathExpressionException;
-import java.io.InputStream;
 import java.util.List;
-import java.util.Map;
 
 @Controller
 public class RecipeController {
 
     private final RecipeService recipeService;
     private final UserService userService;
-    private final XmlService xmlService;
-    private final XmlStore xmlStore;
     private final ScraperService scraper;
 
-    public RecipeController(RecipeService recipeService, UserService userService,
-                            XmlService xmlService, XmlStore xmlStore,
-                            ScraperService scraper) {
+    public RecipeController(RecipeService recipeService, UserService userService, ScraperService scraper) {
         this.recipeService = recipeService;
         this.userService = userService;
-        this.xmlService = xmlService;
-        this.xmlStore = xmlStore;
         this.scraper = scraper;
     }
 
@@ -70,10 +60,7 @@ public class RecipeController {
                 .findFirst()
                 .orElse(DifficultyLevel.BEGINNER.toString());
 
-        InputStream xsl = getClass().getClassLoader().getResourceAsStream("xslt/recipes-display.xsl");
-        String html = xmlService.applyXslt(xmlStore.getRecipesDoc(), xsl, Map.of("skill-level", skillLevel));
-        model.addAttribute("xsltHtml", html);
-
+        model.addAttribute("xsltHtml", recipeService.applyDisplayXslt(skillLevel));
         return "recipes/display";
     }
 
@@ -105,18 +92,14 @@ public class RecipeController {
             return "recipes/add";
         }
 
-        int nextId = recipeService.getAll().size() + 1;
-        String id = "r" + nextId;
-        recipeService.add(new Recipe(id, title, ct1, ct2, difficulty));
+        recipeService.add(title, ct1, ct2, difficulty);
         return "redirect:/recipes";
     }
 
     @GetMapping("/recipes/{id}")
     public String recipeDetail(@PathVariable("id") String id, Model model) throws XPathExpressionException {
         Recipe recipe = recipeService.getById(id);
-        if (recipe == null) {
-            return "redirect:/recipes";
-        }
+        if (recipe == null) return "redirect:/recipes";
         model.addAttribute("recipe", recipe);
         return "recipes/detail";
     }
@@ -146,7 +129,7 @@ public class RecipeController {
     }
 
     @PostMapping("/admin/seed")
-    public String seed() throws Exception {
+    public String seed() throws XPathExpressionException, TransformerException {
         scraper.scrapeIfNeeded();
         userService.seedDefaultUsers();
         return "redirect:/";

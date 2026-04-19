@@ -52,6 +52,35 @@ public class UserService {
         return nodeToUser(node);
     }
 
+    public void addUser(String name, String surname, String skillLevel, String preferredCuisine)
+            throws XPathExpressionException, TransformerException {
+        String id = nextId();
+        Document doc = xmlStore.getUsersDoc();
+        Element root = doc.getDocumentElement();
+
+        Element userEl = doc.createElement("user");
+        userEl.setAttribute("id", id);
+        userEl.setAttribute("skillLevel", skillLevel);
+        userEl.setAttribute("preferredCuisine", preferredCuisine);
+
+        Element nameEl = doc.createElement("name");
+        nameEl.setTextContent(name);
+        userEl.appendChild(nameEl);
+
+        Element surnameEl = doc.createElement("surname");
+        surnameEl.setTextContent(surname);
+        userEl.appendChild(surnameEl);
+
+        root.appendChild(userEl);
+        xmlService.save(doc, xmlStore.getUsersPath());
+    }
+
+    public void seedDefaultUsers() throws XPathExpressionException, TransformerException {
+        if (!getAll().isEmpty()) return;
+        addUser("Abd", "Mirghani", "Intermediate", "Middle-Eastern");
+        addUser("Mario", "Sakka", "Beginner", "Italian");
+    }
+
     public void clearAll() throws TransformerException {
         Document doc = xmlStore.getUsersDoc();
         Element root = doc.getDocumentElement();
@@ -61,30 +90,15 @@ public class UserService {
         xmlService.save(doc, xmlStore.getUsersPath());
     }
 
-    public void seedDefaultUsers() throws XPathExpressionException, TransformerException {
-        if (!getAll().isEmpty()) return;
-        addUser(new User("u1", "Abd", "Mirghani", "Intermediate", "Middle-Eastern"));
-        addUser(new User("u2", "Mario", "Sakka", "Beginner", "Italian"));
-    }
-
-    public void addUser(User user) throws TransformerException {
-        Document doc = xmlStore.getUsersDoc();
-        Element root = doc.getDocumentElement();
-
-        Element userEl = doc.createElement("user");
-        userEl.setAttribute("id", user.getId());
-        userEl.setAttribute("skillLevel", user.getSkillLevel());
-        userEl.setAttribute("preferredCuisine", user.getPreferredCuisine());
-
-        Element nameEl = doc.createElement("name");
-        nameEl.setTextContent(user.getName());
-        userEl.appendChild(nameEl);
-
-        Element surnameEl = doc.createElement("surname");
-        surnameEl.setTextContent(user.getSurname());
-        userEl.appendChild(surnameEl);
-
-        root.appendChild(userEl);
-        xmlService.save(doc, xmlStore.getUsersPath());
+    private String nextId() throws XPathExpressionException {
+        NodeList nodes = xmlService.queryNodeList(xmlStore.getUsersDoc(), "//user");
+        int max = 0;
+        for (int i = 0; i < nodes.getLength(); i++) {
+            String idVal = ((Element) nodes.item(i)).getAttribute("id");
+            try {
+                max = Math.max(max, Integer.parseInt(idVal.substring(1)));
+            } catch (NumberFormatException | IndexOutOfBoundsException ignored) {}
+        }
+        return "u" + (max + 1);
     }
 }

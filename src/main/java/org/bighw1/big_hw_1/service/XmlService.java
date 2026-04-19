@@ -1,5 +1,7 @@
 package org.bighw1.big_hw_1.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -21,6 +23,10 @@ import java.util.Map;
 @Service
 public class XmlService {
 
+    private static final Logger log = LoggerFactory.getLogger(XmlService.class);
+
+    private final XPathFactory xpathFactory = XPathFactory.newInstance();
+
     public Document load(Path filePath) throws ParserConfigurationException, SAXException, IOException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setValidating(true);
@@ -28,6 +34,7 @@ public class XmlService {
         builder.setErrorHandler(new org.xml.sax.helpers.DefaultHandler() {
             @Override
             public void warning(org.xml.sax.SAXParseException e) {
+                log.warn("XML validation warning: {}", e.getMessage());
             }
         });
         return builder.parse(filePath.toFile());
@@ -43,25 +50,25 @@ public class XmlService {
     }
 
     public NodeList queryNodeList(Document doc, String expression) throws XPathExpressionException {
-        XPath xpath = XPathFactory.newInstance().newXPath();
+        XPath xpath = xpathFactory.newXPath();
         return (NodeList) xpath.compile(expression).evaluate(doc, XPathConstants.NODESET);
     }
 
     // Use $varname in the expression and pass values in vars to avoid XPath injection.
     public NodeList queryNodeList(Document doc, String expression, Map<String, String> vars) throws XPathExpressionException {
-        XPath xpath = XPathFactory.newInstance().newXPath();
+        XPath xpath = xpathFactory.newXPath();
         xpath.setXPathVariableResolver(name -> vars.get(name.getLocalPart()));
         return (NodeList) xpath.compile(expression).evaluate(doc, XPathConstants.NODESET);
     }
 
     public Node queryNode(Document doc, String expression) throws XPathExpressionException {
-        XPath xpath = XPathFactory.newInstance().newXPath();
+        XPath xpath = xpathFactory.newXPath();
         return (Node) xpath.compile(expression).evaluate(doc, XPathConstants.NODE);
     }
 
     // Use $varname in the expression and pass values in vars to avoid XPath injection.
     public Node queryNode(Document doc, String expression, Map<String, String> vars) throws XPathExpressionException {
-        XPath xpath = XPathFactory.newInstance().newXPath();
+        XPath xpath = xpathFactory.newXPath();
         xpath.setXPathVariableResolver(name -> vars.get(name.getLocalPart()));
         return (Node) xpath.compile(expression).evaluate(doc, XPathConstants.NODE);
     }
@@ -70,9 +77,7 @@ public class XmlService {
         TransformerFactory tf = TransformerFactory.newInstance();
         Transformer transformer = tf.newTransformer(new StreamSource(xslStream));
         if (params != null) {
-            for (var entry : params.entrySet()) {
-                transformer.setParameter(entry.getKey(), entry.getValue());
-            }
+            params.forEach(transformer::setParameter);
         }
         StringWriter writer = new StringWriter();
         transformer.transform(new DOMSource(doc), new StreamResult(writer));

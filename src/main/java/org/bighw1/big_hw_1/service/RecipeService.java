@@ -6,6 +6,7 @@ import org.w3c.dom.*;
 
 import javax.xml.transform.TransformerException;
 import javax.xml.xpath.XPathExpressionException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -26,8 +27,10 @@ public class RecipeService {
         String id = el.getAttribute("id");
         String title = el.getElementsByTagName("title").item(0).getTextContent().trim();
         NodeList ctNodes = el.getElementsByTagName("cuisineType");
-        String ct1 = ((Element) ctNodes.item(0)).getAttribute("type");
-        String ct2 = ((Element) ctNodes.item(1)).getAttribute("type");
+        Node ct1Node = ctNodes.item(0);
+        Node ct2Node = ctNodes.item(1);
+        String ct1 = ct1Node != null ? ((Element) ct1Node).getAttribute("type") : "";
+        String ct2 = ct2Node != null ? ((Element) ct2Node).getAttribute("type") : "";
         String difficulty = el.getAttribute("difficulty");
         return new Recipe(id, title, ct1, ct2, difficulty);
     }
@@ -48,24 +51,26 @@ public class RecipeService {
         return nodeToRecipe(node);
     }
 
-    public void add(Recipe recipe) throws TransformerException {
+    public void add(String title, String ct1, String ct2, String difficulty)
+            throws XPathExpressionException, TransformerException {
+        String id = nextId();
         Document doc = xmlStore.getRecipesDoc();
         Element root = doc.getDocumentElement();
 
         Element recipeEl = doc.createElement("recipe");
-        recipeEl.setAttribute("id", recipe.getId());
-        recipeEl.setAttribute("difficulty", recipe.getDifficulty());
+        recipeEl.setAttribute("id", id);
+        recipeEl.setAttribute("difficulty", difficulty);
 
         Element titleEl = doc.createElement("title");
-        titleEl.setTextContent(recipe.getTitle());
+        titleEl.setTextContent(title);
         recipeEl.appendChild(titleEl);
 
         Element cuisinesEl = doc.createElement("cuisineTypes");
         Element ct1El = doc.createElement("cuisineType");
-        ct1El.setAttribute("type", recipe.getCuisineType1());
+        ct1El.setAttribute("type", ct1);
         cuisinesEl.appendChild(ct1El);
         Element ct2El = doc.createElement("cuisineType");
-        ct2El.setAttribute("type", recipe.getCuisineType2());
+        ct2El.setAttribute("type", ct2);
         cuisinesEl.appendChild(ct2El);
         recipeEl.appendChild(cuisinesEl);
 
@@ -97,15 +102,6 @@ public class RecipeService {
         return list;
     }
 
-    public void clearAll() throws TransformerException {
-        Document doc = xmlStore.getRecipesDoc();
-        Element root = doc.getDocumentElement();
-        while (root.hasChildNodes()) {
-            root.removeChild(root.getFirstChild());
-        }
-        xmlService.save(doc, xmlStore.getRecipesPath());
-    }
-
     public List<Recipe> recommendBySkillAndCuisine(String skillLevel, String cuisine) throws XPathExpressionException {
         NodeList nodes = xmlService.queryNodeList(
                 xmlStore.getRecipesDoc(),
@@ -116,5 +112,31 @@ public class RecipeService {
             list.add(nodeToRecipe(nodes.item(i)));
         }
         return list;
+    }
+
+    public void clearAll() throws TransformerException {
+        Document doc = xmlStore.getRecipesDoc();
+        Element root = doc.getDocumentElement();
+        while (root.hasChildNodes()) {
+            root.removeChild(root.getFirstChild());
+        }
+        xmlService.save(doc, xmlStore.getRecipesPath());
+    }
+
+    public String applyDisplayXslt(String skillLevel) throws TransformerException {
+        InputStream xsl = getClass().getClassLoader().getResourceAsStream("xslt/recipes-display.xsl");
+        return xmlService.applyXslt(xmlStore.getRecipesDoc(), xsl, Map.of("skill-level", skillLevel));
+    }
+
+    private String nextId() throws XPathExpressionException {
+        NodeList nodes = xmlService.queryNodeList(xmlStore.getRecipesDoc(), "//recipe");
+        int max = 0;
+        for (int i = 0; i < nodes.getLength(); i++) {
+            String idVal = ((Element) nodes.item(i)).getAttribute("id");
+            try {
+                max = Math.max(max, Integer.parseInt(idVal.substring(1)));
+            } catch (NumberFormatException | IndexOutOfBoundsException ignored) {}
+        }
+        return "r" + (max + 1);
     }
 }
