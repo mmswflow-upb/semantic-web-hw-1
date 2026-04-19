@@ -1,5 +1,7 @@
 package org.bighw1.big_hw_1.service;
 
+import org.bighw1.big_hw_1.enums.CuisineType;
+import org.bighw1.big_hw_1.enums.DifficultyLevel;
 import org.bighw1.big_hw_1.model.Recipe;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -19,15 +21,6 @@ public class ScraperService {
 
     private static final String SCRAPE_URL =
             "https://www.bbcgoodfood.com/recipes/collection/budget-autumn";
-
-    private static final List<String> CUISINE_TYPES = List.of(
-            "Italian", "Asian", "Mexican", "French", "Mediterranean",
-            "Indian", "American", "British", "Middle Eastern", "Greek"
-    );
-
-    private static final List<String> DIFFICULTIES = List.of(
-            "Beginner", "Intermediate", "Advanced"
-    );
 
     private final RecipeService recipeService;
 
@@ -55,6 +48,8 @@ public class ScraperService {
                 cards = page.select("h2");
             }
 
+            CuisineType[] cuisines = CuisineType.values();
+            DifficultyLevel[] difficulties = DifficultyLevel.values();
             Random rand = new Random();
             int count = existing.size();
             int added = 0;
@@ -64,15 +59,15 @@ public class ScraperService {
                 if (title.isEmpty()) continue;
                 if (title.contains("premium piece of content") || title.startsWith("App only")) continue;
 
-                int i1 = rand.nextInt(CUISINE_TYPES.size());
+                int i1 = rand.nextInt(cuisines.length);
                 int i2;
                 do {
-                    i2 = rand.nextInt(CUISINE_TYPES.size());
+                    i2 = rand.nextInt(cuisines.length);
                 } while (i2 == i1);
 
-                String ct1 = CUISINE_TYPES.get(i1);
-                String ct2 = CUISINE_TYPES.get(i2);
-                String difficulty = DIFFICULTIES.get(rand.nextInt(DIFFICULTIES.size()));
+                String ct1 = cuisines[i1].toString();
+                String ct2 = cuisines[i2].toString();
+                String difficulty = difficulties[rand.nextInt(difficulties.length)].toString();
 
                 count++;
                 String id = "r" + count;

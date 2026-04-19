@@ -1,7 +1,8 @@
 <!ELEMENT users (user*)>
-<!ELEMENT user (name, surname, skillLevel, preferredCuisine)>
-<!ATTLIST user id ID #REQUIRED>
+<!ELEMENT user (name, surname)>
+<!ATTLIST user
+    id ID #REQUIRED
+    skillLevel (Beginner|Intermediate|Advanced) #REQUIRED
+    preferredCuisine (Italian|Asian|Mexican|French|Mediterranean|Indian|American|British|Middle-Eastern|Greek) #REQUIRED>
 <!ELEMENT name (#PCDATA)>
 <!ELEMENT surname (#PCDATA)>
-<!ELEMENT skillLevel (#PCDATA)>
-<!ELEMENT preferredCuisine (#PCDATA)>

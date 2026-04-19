@@ -8,6 +8,7 @@ import javax.xml.transform.TransformerException;
 import javax.xml.xpath.XPathExpressionException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class UserService {
@@ -25,8 +26,8 @@ public class UserService {
         String id = el.getAttribute("id");
         String name = el.getElementsByTagName("name").item(0).getTextContent().trim();
         String surname = el.getElementsByTagName("surname").item(0).getTextContent().trim();
-        String skillLevel = el.getElementsByTagName("skillLevel").item(0).getTextContent().trim();
-        String preferredCuisine = el.getElementsByTagName("preferredCuisine").item(0).getTextContent().trim();
+        String skillLevel = el.getAttribute("skillLevel");
+        String preferredCuisine = el.getAttribute("preferredCuisine");
         return new User(id, name, surname, skillLevel, preferredCuisine);
     }
 
@@ -45,12 +46,35 @@ public class UserService {
         return nodeToUser(node);
     }
 
+    public User getById(String id) throws XPathExpressionException {
+        Node node = xmlService.queryNode(xmlStore.getUsersDoc(), "//user[@id=$id]", Map.of("id", id));
+        if (node == null) return null;
+        return nodeToUser(node);
+    }
+
+    public void clearAll() throws TransformerException {
+        Document doc = xmlStore.getUsersDoc();
+        Element root = doc.getDocumentElement();
+        while (root.hasChildNodes()) {
+            root.removeChild(root.getFirstChild());
+        }
+        xmlService.save(doc, xmlStore.getUsersPath());
+    }
+
+    public void seedDefaultUsers() throws XPathExpressionException, TransformerException {
+        if (!getAll().isEmpty()) return;
+        addUser(new User("u1", "Abd", "Mirghani", "Intermediate", "Middle-Eastern"));
+        addUser(new User("u2", "Mario", "Sakka", "Beginner", "Italian"));
+    }
+
     public void addUser(User user) throws TransformerException {
         Document doc = xmlStore.getUsersDoc();
         Element root = doc.getDocumentElement();
 
         Element userEl = doc.createElement("user");
         userEl.setAttribute("id", user.getId());
+        userEl.setAttribute("skillLevel", user.getSkillLevel());
+        userEl.setAttribute("preferredCuisine", user.getPreferredCuisine());
 
         Element nameEl = doc.createElement("name");
         nameEl.setTextContent(user.getName());
@@ -59,14 +83,6 @@ public class UserService {
         Element surnameEl = doc.createElement("surname");
         surnameEl.setTextContent(user.getSurname());
         userEl.appendChild(surnameEl);
-
-        Element skillEl = doc.createElement("skillLevel");
-        skillEl.setTextContent(user.getSkillLevel());
-        userEl.appendChild(skillEl);
-
-        Element cuisineEl = doc.createElement("preferredCuisine");
-        cuisineEl.setTextContent(user.getPreferredCuisine());
-        userEl.appendChild(cuisineEl);
 
         root.appendChild(userEl);
         xmlService.save(doc, xmlStore.getUsersPath());

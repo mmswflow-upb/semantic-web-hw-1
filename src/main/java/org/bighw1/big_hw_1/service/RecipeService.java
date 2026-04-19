@@ -26,9 +26,9 @@ public class RecipeService {
         String id = el.getAttribute("id");
         String title = el.getElementsByTagName("title").item(0).getTextContent().trim();
         NodeList ctNodes = el.getElementsByTagName("cuisineType");
-        String ct1 = ctNodes.item(0).getTextContent().trim();
-        String ct2 = ctNodes.item(1).getTextContent().trim();
-        String difficulty = el.getElementsByTagName("difficulty").item(0).getTextContent().trim();
+        String ct1 = ((Element) ctNodes.item(0)).getAttribute("type");
+        String ct2 = ((Element) ctNodes.item(1)).getAttribute("type");
+        String difficulty = el.getAttribute("difficulty");
         return new Recipe(id, title, ct1, ct2, difficulty);
     }
 
@@ -54,6 +54,7 @@ public class RecipeService {
 
         Element recipeEl = doc.createElement("recipe");
         recipeEl.setAttribute("id", recipe.getId());
+        recipeEl.setAttribute("difficulty", recipe.getDifficulty());
 
         Element titleEl = doc.createElement("title");
         titleEl.setTextContent(recipe.getTitle());
@@ -61,16 +62,12 @@ public class RecipeService {
 
         Element cuisinesEl = doc.createElement("cuisineTypes");
         Element ct1El = doc.createElement("cuisineType");
-        ct1El.setTextContent(recipe.getCuisineType1());
+        ct1El.setAttribute("type", recipe.getCuisineType1());
         cuisinesEl.appendChild(ct1El);
         Element ct2El = doc.createElement("cuisineType");
-        ct2El.setTextContent(recipe.getCuisineType2());
+        ct2El.setAttribute("type", recipe.getCuisineType2());
         cuisinesEl.appendChild(ct2El);
         recipeEl.appendChild(cuisinesEl);
-
-        Element diffEl = doc.createElement("difficulty");
-        diffEl.setTextContent(recipe.getDifficulty());
-        recipeEl.appendChild(diffEl);
 
         root.appendChild(recipeEl);
         xmlService.save(doc, xmlStore.getRecipesPath());
@@ -79,7 +76,7 @@ public class RecipeService {
     public List<Recipe> filterByCuisine(String cuisine) throws XPathExpressionException {
         NodeList nodes = xmlService.queryNodeList(
                 xmlStore.getRecipesDoc(),
-                "//recipe[cuisineTypes/cuisineType=$cuisine]",
+                "//recipe[cuisineTypes/cuisineType/@type=$cuisine]",
                 Map.of("cuisine", cuisine));
         List<Recipe> list = new ArrayList<>();
         for (int i = 0; i < nodes.getLength(); i++) {
@@ -91,7 +88,7 @@ public class RecipeService {
     public List<Recipe> recommendBySkill(String skillLevel) throws XPathExpressionException {
         NodeList nodes = xmlService.queryNodeList(
                 xmlStore.getRecipesDoc(),
-                "//recipe[difficulty=$skill]",
+                "//recipe[@difficulty=$skill]",
                 Map.of("skill", skillLevel));
         List<Recipe> list = new ArrayList<>();
         for (int i = 0; i < nodes.getLength(); i++) {
@@ -100,10 +97,19 @@ public class RecipeService {
         return list;
     }
 
+    public void clearAll() throws TransformerException {
+        Document doc = xmlStore.getRecipesDoc();
+        Element root = doc.getDocumentElement();
+        while (root.hasChildNodes()) {
+            root.removeChild(root.getFirstChild());
+        }
+        xmlService.save(doc, xmlStore.getRecipesPath());
+    }
+
     public List<Recipe> recommendBySkillAndCuisine(String skillLevel, String cuisine) throws XPathExpressionException {
         NodeList nodes = xmlService.queryNodeList(
                 xmlStore.getRecipesDoc(),
-                "//recipe[difficulty=$skill and cuisineTypes/cuisineType=$cuisine]",
+                "//recipe[@difficulty=$skill and cuisineTypes/cuisineType/@type=$cuisine]",
                 Map.of("skill", skillLevel, "cuisine", cuisine));
         List<Recipe> list = new ArrayList<>();
         for (int i = 0; i < nodes.getLength(); i++) {
