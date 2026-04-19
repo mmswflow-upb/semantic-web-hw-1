@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('All Recipes')}"></head>
+<body class="page-body">
+    <aside th:replace="~{fragments/sidebar :: nav}"></aside>
+    <main class="main">
+        <h1 class="page-title mb-1">All Recipes</h1>
+        <p class="muted mb-5">Total: <span th:text="${recipes.size()}">0</span></p>
+        <table class="tbl">
+            <thead>
+                <tr class="thead-row">
+                    <th class="th">ID</th>
+                    <th class="th">Title</th>
+                    <th class="th">Cuisine 1</th>
+                    <th class="th">Cuisine 2</th>
+                    <th class="th">Difficulty</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="recipe, stat : ${recipes}" th:class="${stat.even} ? 'bg-gray-50' : ''">
+                    <td class="td">
+                        <a th:href="@{/recipes/{id}(id=${recipe.id})}" th:text="${recipe.id}" class="link"></a>
+                    </td>
+                    <td class="td" th:text="${recipe.title}"></td>
+                    <td class="td" th:text="${recipe.cuisineType1}"></td>
+                    <td class="td" th:text="${recipe.cuisineType2}"></td>
+                    <td class="td" th:text="${recipe.difficulty}"></td>
+                </tr>
+            </tbody>
+        </table>
+        <p class="mt-4"><a href="/recipes/add" class="link">Add a recipe</a></p>
+    </main>
+</body>
+</html>

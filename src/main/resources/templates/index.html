@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Recipe Recommender')}"></head>
+<body class="page-body">
+    <aside th:replace="~{fragments/sidebar :: nav}"></aside>
+    <main class="main">
+        <h1 class="page-title mb-2">Welcome</h1>
+        <p class="muted mb-6">Semantic Web Big HW 1 - Mirghani Abdelrahman, Sakka Mohamad-Mario</p>
+        <p class="hint mb-10">Use the sidebar to navigate between pages.</p>
+
+        <div class="card-green mb-4">
+            <h2 class="card-title-green">Seed Data</h2>
+            <p class="card-body-green">Scrapes up to 20 recipes from BBC Good Food and creates two default users (Abd and Mario) if none exist.</p>
+            <form method="post" action="/admin/seed">
+                <button type="submit" class="btn-green">Seed Data</button>
+            </form>
+        </div>
+
+        <div class="card-red">
+            <h2 class="card-title-red">Danger Zone</h2>
+            <p class="card-body-red">Permanently deletes all recipes and users from the XML files.</p>
+            <form method="post" action="/admin/clear"
+                  onsubmit="return confirm('Delete all recipes and users? This cannot be undone.')">
+                <button type="submit" class="btn-red">Clear All Data</button>
+            </form>
+        </div>
+    </main>
+</body>
+</html>

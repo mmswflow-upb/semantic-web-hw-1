@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('XSLT Display')}"></head>
+<body class="page-body">
+    <aside th:replace="~{fragments/sidebar :: nav}"></aside>
+    <main class="main">
+        <h1 class="page-title mb-2">XSLT Display</h1>
+        <p class="muted mb-5">Select a user. Recipes matching their skill level are highlighted yellow; the rest are green.</p>
+
+        <form method="post" action="/recipes/display" class="inline-form mb-4">
+            <label for="userId" class="inline-label">Select user:</label>
+            <select id="userId" name="userId" class="select w-64">
+                <option value="">-- pick a user --</option>
+                <option th:each="user : ${users}"
+                        th:value="${user.id}"
+                        th:text="${user.name} + ' ' + ${user.surname} + ' (' + ${user.skillLevel} + ')'"
+                        th:selected="${user.id == selectedUserId}">
+                </option>
+            </select>
+            <button type="submit" class="btn">Show</button>
+        </form>
+
+        <div class="legend">
+            <span class="legend-item">
+                <span class="swatch" style="background:#FFFF99;"></span>
+                Matches skill level
+            </span>
+            <span class="legend-item">
+                <span class="swatch" style="background:#90EE90;"></span>
+                Other
+            </span>
+        </div>
+
+        <div th:utext="${xsltHtml}"></div>
+    </main>
+</body>
+</html>

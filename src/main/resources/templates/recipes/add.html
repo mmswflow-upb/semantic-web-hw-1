@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Add Recipe')}"></head>
+<body class="page-body">
+    <aside th:replace="~{fragments/sidebar :: nav}"></aside>
+    <main class="main">
+        <h1 class="page-title mb-6">Add a Recipe</h1>
+
+        <p class="error-msg" th:if="${errorMsg != ''}" th:text="${errorMsg}"></p>
+
+        <form method="post" action="/recipes/add" class="form">
+            <div>
+                <label for="title" class="label">Title</label>
+                <input id="title" type="text" name="title" th:value="${title}" required class="input w-80" />
+            </div>
+            <div>
+                <label for="cuisineType1" class="label">Cuisine Type 1</label>
+                <select id="cuisineType1" name="cuisineType1" class="select w-80">
+                    <option value="">-- select --</option>
+                    <option th:each="ct : ${cuisineTypes}" th:value="${ct.label}" th:text="${ct.label}"
+                            th:selected="${ct.label == cuisineType1}"></option>
+                </select>
+            </div>
+            <div>
+                <label for="cuisineType2" class="label">Cuisine Type 2 (must differ from type 1)</label>
+                <select id="cuisineType2" name="cuisineType2" class="select w-80">
+                    <option value="">-- select --</option>
+                    <option th:each="ct : ${cuisineTypes}" th:value="${ct.label}" th:text="${ct.label}"
+                            th:selected="${ct.label == cuisineType2}"></option>
+                </select>
+            </div>
+            <div>
+                <label for="difficulty" class="label">Difficulty</label>
+                <select id="difficulty" name="difficulty" class="select w-80">
+                    <option value="">-- select --</option>
+                    <option th:each="d : ${difficulties}" th:value="${d.label}" th:text="${d.label}"
+                            th:selected="${d.label == difficulty}"></option>
+                </select>
+            </div>
+            <button type="submit" class="btn mt-4">Save Recipe</button>
+        </form>
+    </main>
+</body>
+</html>

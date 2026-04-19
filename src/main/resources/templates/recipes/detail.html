@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Recipe Detail')}"></head>
+<body class="page-body">
+    <aside th:replace="~{fragments/sidebar :: nav}"></aside>
+    <main class="main">
+        <a href="/recipes" class="back-link">Back to all recipes</a>
+
+        <div class="card w-96">
+            <h1 class="font-bold mb-5" th:text="${recipe.title}">Recipe Title</h1>
+
+            <dl class="detail-list">
+                <div class="detail-row">
+                    <dt class="detail-key">ID</dt>
+                    <dd th:text="${recipe.id}"></dd>
+                </div>
+                <div class="detail-row">
+                    <dt class="detail-key">Cuisine Type 1</dt>
+                    <dd th:text="${recipe.cuisineType1}"></dd>
+                </div>
+                <div class="detail-row">
+                    <dt class="detail-key">Cuisine Type 2</dt>
+                    <dd th:text="${recipe.cuisineType2}"></dd>
+                </div>
+                <div class="detail-row">
+                    <dt class="detail-key">Difficulty</dt>
+                    <dd th:text="${recipe.difficulty}"></dd>
+                </div>
+            </dl>
+        </div>
+    </main>
+</body>
+</html>
