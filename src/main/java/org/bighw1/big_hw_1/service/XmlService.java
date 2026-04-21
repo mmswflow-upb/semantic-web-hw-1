@@ -36,6 +36,11 @@ public class XmlService {
             public void warning(org.xml.sax.SAXParseException e) {
                 log.warn("XML validation warning: {}", e.getMessage());
             }
+
+            @Override
+            public void error(org.xml.sax.SAXParseException e) throws SAXException {
+                throw e;
+            }
         });
         return builder.parse(filePath.toFile());
     }
