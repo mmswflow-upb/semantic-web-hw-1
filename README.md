@@ -16,3 +16,4 @@ Mirghani Abdelrahman:
 - Built RecipeService and UserService including XPath queries, ID generation, and recommendation logic
 - Designed and implemented all Thymeleaf HTML templates
 - Wrote both controllers that handle all routing and form processing
+- Added backup recipes
