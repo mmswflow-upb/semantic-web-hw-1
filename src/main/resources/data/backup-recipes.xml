@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<recipes>
+    <recipe difficulty="Advanced">
+        <title>Spaghetti Carbonara</title>
+        <cuisineTypes>
+            <cuisineType type="Italian"/>
+            <cuisineType type="Mediterranean"/>
+        </cuisineTypes>
+    </recipe>
+    <recipe difficulty="Intermediate">
+        <title>Chicken Tikka Masala</title>
+        <cuisineTypes>
+            <cuisineType type="Indian"/>
+            <cuisineType type="British"/>
+        </cuisineTypes>
+    </recipe>
+    <recipe difficulty="Beginner">
+        <title>Beef Tacos</title>
+        <cuisineTypes>
+            <cuisineType type="Mexican"/>
+            <cuisineType type="American"/>
+        </cuisineTypes>
+    </recipe>
+    <recipe difficulty="Intermediate">
+        <title>Ratatouille</title>
+        <cuisineTypes>
+            <cuisineType type="French"/>
+            <cuisineType type="Mediterranean"/>
+        </cuisineTypes>
+    </recipe>
+    <recipe difficulty="Beginner">
+        <title>Pad Thai</title>
+        <cuisineTypes>
+            <cuisineType type="Asian"/>
+            <cuisineType type="Indian"/>
+        </cuisineTypes>
+    </recipe>
+    <recipe difficulty="Beginner">
+        <title>Lamb Kofta</title>
+        <cuisineTypes>
+            <cuisineType type="Middle-Eastern"/>
+            <cuisineType type="Greek"/>
+        </cuisineTypes>
+    </recipe>
+    <recipe difficulty="Beginner">
+        <title>Greek Salad</title>
+        <cuisineTypes>
+            <cuisineType type="Greek"/>
+            <cuisineType type="Mediterranean"/>
+        </cuisineTypes>
+    </recipe>
+    <recipe difficulty="Intermediate">
+        <title>Butter Chicken</title>
+        <cuisineTypes>
+            <cuisineType type="Indian"/>
+            <cuisineType type="Middle-Eastern"/>
+        </cuisineTypes>
+    </recipe>
+    <recipe difficulty="Beginner">
+        <title>Fish and Chips</title>
+        <cuisineTypes>
+            <cuisineType type="British"/>
+            <cuisineType type="American"/>
+        </cuisineTypes>
+    </recipe>
+    <recipe difficulty="Advanced">
+        <title>Beef Bourguignon</title>
+        <cuisineTypes>
+            <cuisineType type="French"/>
+            <cuisineType type="Mediterranean"/>
+        </cuisineTypes>
+    </recipe>
+    <recipe difficulty="Advanced">
+        <title>Moussaka</title>
+        <cuisineTypes>
+            <cuisineType type="Greek"/>
+            <cuisineType type="Mediterranean"/>
+        </cuisineTypes>
+    </recipe>
+    <recipe difficulty="Intermediate">
+        <title>Chicken Shawarma</title>
+        <cuisineTypes>
+            <cuisineType type="Middle-Eastern"/>
+            <cuisineType type="Mediterranean"/>
+        </cuisineTypes>
+    </recipe>
+    <recipe difficulty="Beginner">
+        <title>Margherita Pizza</title>
+        <cuisineTypes>
+            <cuisineType type="Italian"/>
+            <cuisineType type="Mediterranean"/>
+        </cuisineTypes>
+    </recipe>
+    <recipe difficulty="Intermediate">
+        <title>Tom Yum Soup</title>
+        <cuisineTypes>
+            <cuisineType type="Asian"/>
+            <cuisineType type="Indian"/>
+        </cuisineTypes>
+    </recipe>
+    <recipe difficulty="Beginner">
+        <title>Pulled Pork Sandwich</title>
+        <cuisineTypes>
+            <cuisineType type="American"/>
+            <cuisineType type="British"/>
+        </cuisineTypes>
+    </recipe>
+    <recipe difficulty="Advanced">
+        <title>Paella</title>
+        <cuisineTypes>
+            <cuisineType type="Mediterranean"/>
+            <cuisineType type="French"/>
+        </cuisineTypes>
+    </recipe>
+    <recipe difficulty="Beginner">
+        <title>Falafel Wrap</title>
+        <cuisineTypes>
+            <cuisineType type="Middle-Eastern"/>
+            <cuisineType type="Mediterranean"/>
+        </cuisineTypes>
+    </recipe>
+    <recipe difficulty="Beginner">
+        <title>Chicken Stir Fry</title>
+        <cuisineTypes>
+            <cuisineType type="Asian"/>
+            <cuisineType type="American"/>
+        </cuisineTypes>
+    </recipe>
+    <recipe difficulty="Intermediate">
+        <title>Herb Roasted Lamb</title>
+        <cuisineTypes>
+            <cuisineType type="French"/>
+            <cuisineType type="Mediterranean"/>
+        </cuisineTypes>
+    </recipe>
+    <recipe difficulty="Intermediate">
+        <title>Enchiladas</title>
+        <cuisineTypes>
+            <cuisineType type="Mexican"/>
+            <cuisineType type="American"/>
+        </cuisineTypes>
+    </recipe>
+</recipes>

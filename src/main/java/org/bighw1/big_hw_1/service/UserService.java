@@ -8,7 +8,6 @@ import javax.xml.transform.TransformerException;
 import javax.xml.xpath.XPathExpressionException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class UserService {
@@ -47,7 +46,7 @@ public class UserService {
     }
 
     public User getById(String id) throws XPathExpressionException {
-        Node node = xmlService.queryNode(xmlStore.getUsersDoc(), "//user[@id=$id]", Map.of("id", id));
+        Node node = xmlService.queryNode(xmlStore.getUsersDoc(), "//user[@id='" + id + "']");
         if (node == null) return null;
         return nodeToUser(node);
     }

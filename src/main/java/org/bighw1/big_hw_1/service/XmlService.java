@@ -54,22 +54,8 @@ public class XmlService {
         return (NodeList) xpath.compile(expression).evaluate(doc, XPathConstants.NODESET);
     }
 
-    // Use $varname in the expression and pass values in vars to avoid XPath injection.
-    public NodeList queryNodeList(Document doc, String expression, Map<String, String> vars) throws XPathExpressionException {
-        XPath xpath = xpathFactory.newXPath();
-        xpath.setXPathVariableResolver(name -> vars.get(name.getLocalPart()));
-        return (NodeList) xpath.compile(expression).evaluate(doc, XPathConstants.NODESET);
-    }
-
     public Node queryNode(Document doc, String expression) throws XPathExpressionException {
         XPath xpath = xpathFactory.newXPath();
-        return (Node) xpath.compile(expression).evaluate(doc, XPathConstants.NODE);
-    }
-
-    // Use $varname in the expression and pass values in vars to avoid XPath injection.
-    public Node queryNode(Document doc, String expression, Map<String, String> vars) throws XPathExpressionException {
-        XPath xpath = xpathFactory.newXPath();
-        xpath.setXPathVariableResolver(name -> vars.get(name.getLocalPart()));
         return (Node) xpath.compile(expression).evaluate(doc, XPathConstants.NODE);
     }
 

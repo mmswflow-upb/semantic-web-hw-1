@@ -46,7 +46,7 @@ public class RecipeService {
 
     public Recipe getById(String id) throws XPathExpressionException {
         Node node = xmlService.queryNode(
-                xmlStore.getRecipesDoc(), "//recipe[@id=$id]", Map.of("id", id));
+                xmlStore.getRecipesDoc(), "//recipe[@id='" + id + "']");
         if (node == null) return null;
         return nodeToRecipe(node);
     }
@@ -81,8 +81,7 @@ public class RecipeService {
     public List<Recipe> filterByCuisine(String cuisine) throws XPathExpressionException {
         NodeList nodes = xmlService.queryNodeList(
                 xmlStore.getRecipesDoc(),
-                "//recipe[cuisineTypes/cuisineType/@type=$cuisine]",
-                Map.of("cuisine", cuisine));
+                "//recipe[cuisineTypes/cuisineType/@type='" + cuisine + "']");
         List<Recipe> list = new ArrayList<>();
         for (int i = 0; i < nodes.getLength(); i++) {
             list.add(nodeToRecipe(nodes.item(i)));
@@ -93,8 +92,7 @@ public class RecipeService {
     public List<Recipe> recommendBySkill(String skillLevel) throws XPathExpressionException {
         NodeList nodes = xmlService.queryNodeList(
                 xmlStore.getRecipesDoc(),
-                "//recipe[@difficulty=$skill]",
-                Map.of("skill", skillLevel));
+                "//recipe[@difficulty='" + skillLevel + "']");
         List<Recipe> list = new ArrayList<>();
         for (int i = 0; i < nodes.getLength(); i++) {
             list.add(nodeToRecipe(nodes.item(i)));
@@ -105,8 +103,7 @@ public class RecipeService {
     public List<Recipe> recommendBySkillAndCuisine(String skillLevel, String cuisine) throws XPathExpressionException {
         NodeList nodes = xmlService.queryNodeList(
                 xmlStore.getRecipesDoc(),
-                "//recipe[@difficulty=$skill and cuisineTypes/cuisineType/@type=$cuisine]",
-                Map.of("skill", skillLevel, "cuisine", cuisine));
+                "//recipe[@difficulty='" + skillLevel + "' and cuisineTypes/cuisineType/@type='" + cuisine + "']");
         List<Recipe> list = new ArrayList<>();
         for (int i = 0; i < nodes.getLength(); i++) {
             list.add(nodeToRecipe(nodes.item(i)));
